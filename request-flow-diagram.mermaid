@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant Client
+    participant Spring as Spring Dispatcher Servlet
+    participant Controller as OrderControllerV1
+    participant Service as OrderServiceV1
+    
+    Client->>Spring: GET /v1/request?itemId=choongang
+    Note over Spring: URL 파라미터 추출: itemId=choongang
+    Spring->>Controller: request("choongang")
+    Note over Controller: @GetMapping("/v1/request")
+    Controller->>Service: orderItem("choongang")
+    Note over Service: 주문 처리 로직 실행
+    Service-->>Controller: 처리 완료
+    Controller-->>Spring: return "ok"
+    Spring-->>Client: HTTP 200 OK with body "ok"
