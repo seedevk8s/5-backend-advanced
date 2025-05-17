@@ -1,0 +1,43 @@
+flowchart TD
+    subgraph "트레이스 ID 및 레벨 처리"
+        A[클라이언트 요청] --> B["Controller - begin()"]
+        B --> C["TraceId 생성 (level=0)"]
+        C --> D["Service - beginSync()"]
+        D --> E["TraceId.createNextId() (level=1)"]
+        E --> F["Repository - beginSync()"]
+        F --> G["TraceId.createNextId() (level=2)"]
+    end
+    
+    subgraph "로그 출력 패턴"
+        H["[트레이스ID] 레벨에 따른 들여쓰기 + 메시지"]
+        I["시작: -->"]
+        J["정상 종료: <--"]
+        K["예외 종료: <X-"]
+        L["시간 측정: time=Nms"]
+        M["예외 정보: ex=Exception"]
+    end
+    
+    subgraph "정상 케이스 로그 구조"
+        N["[da47ab42] OrderControllerV2.request()"]
+        O["[da47ab42] |-->OrderServiceV2.orderItem()"]
+        P["[da47ab42] |   |-->OrderRepositoryV2.save()"]
+        Q["[da47ab42] |   |<--OrderRepositoryV2.save() time=1003ms"]
+        R["[da47ab42] |<--OrderServiceV2.orderItem() time=1003ms"]
+        S["[da47ab42] <--OrderControllerV2.request() time=1003ms"]
+    end
+    
+    subgraph "예외 케이스 로그 구조"
+        T["[2d42e21d] OrderControllerV2.request()"]
+        U["[2d42e21d] |-->OrderServiceV2.orderItem()"]
+        V["[2d42e21d] |   |-->OrderRepositoryV2.save()"]
+        W["[2d42e21d] |   |<X-OrderRepositoryV2.save() time=0ms ex=..."]
+        X["[2d42e21d] |<X-OrderServiceV2.orderItem() time=0ms ex=..."]
+        Y["[2d42e21d] <X-OrderControllerV2.request() time=2ms ex=..."]
+    end
+    
+    subgraph "addSpace() 메서드의 들여쓰기 동작"
+        AA["level=0: 접두사만"]
+        BB["level=1: |접두사"]
+        CC["level=2: |   |접두사"]
+        DD["level=3: |   |   |접두사"]
+    end
