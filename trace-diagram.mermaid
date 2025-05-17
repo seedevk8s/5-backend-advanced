@@ -1,0 +1,61 @@
+sequenceDiagram
+    participant Client
+    participant Controller as OrderControllerV2
+    participant Service as OrderServiceV2
+    participant Repository as OrderRepositoryV2
+    
+    %% 정상 케이스 (itemId=choongang)
+    rect rgb(230, 255, 230)
+    Note over Client,Repository: Case 1: Normal Request (itemId=choongang)
+    Client->>Controller: GET /v2/request?itemId=choongang
+    
+    Note right of Controller: begin("OrderControllerV2.request()")
+    Note right of Controller: TraceId: da47ab42, Level: 0
+    
+    Controller->>Service: orderItem(traceId, "choongang")
+    Note right of Service: beginSync(traceId, "OrderServiceV2.orderItem()")
+    Note right of Service: TraceId: da47ab42, Level: 1
+    
+    Service->>Repository: save(traceId, "choongang")
+    Note right of Repository: beginSync(traceId, "OrderRepositoryV2.save()")
+    Note right of Repository: TraceId: da47ab42, Level: 2
+    Note right of Repository: sleep(1000)
+    
+    Repository-->>Service: end(status) - success
+    Note right of Repository: time=1003ms
+    
+    Service-->>Controller: end(status) - success
+    Note right of Service: time=1003ms
+    
+    Controller-->>Client: return "ok"
+    Note right of Controller: end(status) - success
+    Note right of Controller: time=1003ms
+    end
+    
+    %% 예외 케이스 (itemId=ex)
+    rect rgb(255, 230, 230)
+    Note over Client,Repository: Case 2: Exception Request (itemId=ex)
+    Client->>Controller: GET /v2/request?itemId=ex
+    
+    Note right of Controller: begin("OrderControllerV2.request()")
+    Note right of Controller: TraceId: 2d42e21d, Level: 0
+    
+    Controller->>Service: orderItem(traceId, "ex")
+    Note right of Service: beginSync(traceId, "OrderServiceV2.orderItem()")
+    Note right of Service: TraceId: 2d42e21d, Level: 1
+    
+    Service->>Repository: save(traceId, "ex")
+    Note right of Repository: beginSync(traceId, "OrderRepositoryV2.save()")
+    Note right of Repository: TraceId: 2d42e21d, Level: 2
+    Note right of Repository: throw IllegalStateException("예외 발생!")
+    
+    Repository-->>Service: exception(status, e)
+    Note right of Repository: time=0ms, ex=IllegalStateException
+    
+    Service-->>Controller: exception(status, e)
+    Note right of Service: time=0ms, ex=IllegalStateException
+    
+    Controller-->>Client: throw exception
+    Note right of Controller: exception(status, e)
+    Note right of Controller: time=2ms, ex=IllegalStateException
+    end

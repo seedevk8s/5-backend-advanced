@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant C as 컨트롤러
+    participant S as 서비스
+    participant R as 레포지토리
+    
+    Note over C,R: 하나의 트랜잭션 ID로 전체 추적
+    
+    C->>S: 요청
+    Note right of C: [abc123] 메시지
+    
+    S->>R: 요청
+    Note right of S: [abc123] |-->메시지
+    
+    alt 정상 케이스
+        R-->>S: 응답
+        Note right of R: [abc123] |   |<--메시지 time=Nms
+        
+        S-->>C: 응답
+        Note right of S: [abc123] |<--메시지 time=Nms
+    else 예외 케이스
+        R-->>S: 예외
+        Note right of R: [abc123] |   |<X-메시지 time=Nms ex=예외
+        
+        S-->>C: 예외
+        Note right of S: [abc123] |<X-메시지 time=Nms ex=예외
+    end

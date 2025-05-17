@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant TestWorker as "Test Worker Thread"
+    participant Trace as "HelloTraceV2"
+    participant TraceId as "TraceId 객체"
+    participant LogSystem as "로깅 시스템"
+    
+    Note over TestWorker,LogSystem: 테스트 시작 (time = 0ms)
+    
+    TestWorker->>+Trace: trace.begin("hello1")
+    Trace->>+TraceId: new TraceId()
+    TraceId-->>-Trace: 생성된 TraceId [4569cd33] level=0
+    
+    Trace->>LogSystem: log.info("[4569cd33] hello1")
+    Note over LogSystem: 20:04:43.361 [Test worker] INFO - [4569cd33] hello1
+    
+    Trace-->>TestWorker: 반환: status1 (TraceId=[4569cd33], level=0)
+    
+    TestWorker->>+Trace: trace.beginSync(status1.getTraceId(), "hello2")
+    Trace->>+TraceId: nextId = beforeTraceId.createNextId()
+    TraceId-->>-Trace: 증가된 TraceId [4569cd33] level=1
+    
+    Trace->>LogSystem: log.info("[4569cd33] |-->hello2")
+    Note over LogSystem: 20:04:43.367 [Test worker] INFO - [4569cd33] |-->hello2
+    
+    Trace-->>TestWorker: 반환: status2 (TraceId=[4569cd33], level=1)
+    
+    TestWorker->>+Trace: trace.end(status2)
+    Trace->>LogSystem: log.info("[4569cd33] |<--hello2 time=0ms")
+    Note over LogSystem: 20:04:43.367 [Test worker] INFO - [4569cd33] |<--hello2 time=0ms
+    Trace-->>-TestWorker: 완료 (hello2 종료)
+    
+    TestWorker->>+Trace: trace.end(status1)
+    Trace->>LogSystem: log.info("[4569cd33] hello1 time=10ms")
+    Note over LogSystem: 20:04:43.367 [Test worker] INFO - [4569cd33] hello1 time=10ms
+    Trace-->>-TestWorker: 완료 (hello1 종료)
+    
+    Note over TestWorker,LogSystem: 테스트 종료 (time = 10ms)
+    
+    %% 각 메시지의 형식 설명
+    Note right of LogSystem: 로그 메시지 형식:<br/>1. [traceId] message<br/>2. [traceId] |-->message (level=1)<br/>3. [traceId] |<--message time=Xms (level=1)<br/>4. [traceId] message time=Xms (level=0)
