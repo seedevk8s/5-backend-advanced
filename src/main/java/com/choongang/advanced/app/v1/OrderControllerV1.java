@@ -21,10 +21,21 @@ public class OrderControllerV1 {
     @GetMapping("/v1/request")
     public String request(String itemId) {
 
-        TraceStatus status = trace.begin("OrderControllerV1.request");
-        orderService.orderItem(itemId);
-        trace.end(status);
+        TraceStatus status = null;
+        // 비즈니스 로직
+        // 주문 요청
+        try {
+            status = trace.begin("OrderControllerV1.request");
+            orderService.orderItem(itemId);
+            trace.end(status);
+            return "ok";
+        } catch (Exception e) {
+            trace.exception(status, e);
+            throw new RuntimeException(e);  // 예외를 꼭 던져야 한다.
+        }
 
-        return "ok";
+
+
+
     }
 }
