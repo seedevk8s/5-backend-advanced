@@ -25,13 +25,13 @@ public class OrderControllerV1 {
         // 비즈니스 로직
         // 주문 요청
         try {
-            status = trace.begin("OrderControllerV1.request");
+            status = trace.begin("OrderControllerV1.request()");
             orderService.orderItem(itemId);
             trace.end(status);
             return "ok";
         } catch (Exception e) {
             trace.exception(status, e);
-            throw new RuntimeException(e);  // 예외를 꼭 던져야 한다.
+            throw e;  // 예외를 꼭 던져야 한다.
         }
 
 
