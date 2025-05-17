@@ -1,0 +1,49 @@
+sequenceDiagram
+    participant TestWorker as "Test Worker Thread"
+    participant Trace as "HelloTraceV2"
+    participant TraceId as "TraceId 객체"
+    participant LogSystem as "로깅 시스템"
+    
+    %% 타이틀과 스타일링
+    note over TestWorker,LogSystem: begin_exception() 테스트 실행 (예외 상황 추적)
+    
+    %% hello1 시작
+    TestWorker->>+Trace: trace.begin("hello1")
+    Trace->>+TraceId: new TraceId()
+    TraceId-->>-Trace: 생성된 TraceId [8540a9da] level=0
+    Trace->>LogSystem: log.info("[8540a9da] hello1")
+    Note over LogSystem: 20:27:43.635 [Test worker] INFO - [8540a9da] hello1
+    Trace-->>TestWorker: 반환: status1 (TraceId=[8540a9da], level=0)
+    
+    %% hello2 시작
+    TestWorker->>+Trace: trace.beginSync(status1.getTraceId(),"hello2")
+    Trace->>+TraceId: nextId = beforeTraceId.createNextId()
+    TraceId-->>-Trace: 증가된 TraceId [8540a9da] level=1
+    Trace->>LogSystem: log.info("[8540a9da] |-->hello2")
+    Note over LogSystem: 20:27:43.640 [Test worker] INFO - [8540a9da] |-->hello2
+    Trace-->>TestWorker: 반환: status2 (TraceId=[8540a9da], level=1)
+    
+    %% 예외 발생 및 처리
+    TestWorker->>TestWorker: 예외 발생: new IllegalStateException()
+    
+    %% hello2 예외 처리
+    TestWorker->>+Trace: trace.exception(status2, new IllegalStateException())
+    Trace->>+Trace: complete(status2, exception)
+    Trace->>LogSystem: log.info("[8540a9da] |<X-hello2 time=0ms ex=java.lang.IllegalStateException")
+    Note over LogSystem: 20:27:43.640 [Test worker] INFO - [8540a9da] |<X-hello2 time=0ms ex=java.lang.IllegalStateException
+    Trace-->>-Trace: 내부 처리 완료
+    Trace-->>-TestWorker: 완료 (hello2 예외 처리 종료)
+    
+    %% hello1 예외 처리
+    TestWorker->>+Trace: trace.exception(status1, new IllegalStateException())
+    Trace->>+Trace: complete(status1, exception)
+    Trace->>LogSystem: log.info("[8540a9da] hello1 time=8ms ex=java.lang.IllegalStateException")
+    Note over LogSystem: 20:27:43.641 [Test worker] INFO - [8540a9da] hello1 time=8ms ex=java.lang.IllegalStateException
+    Trace-->>-Trace: 내부 처리 완료
+    Trace-->>-TestWorker: 완료 (hello1 예외 처리 종료)
+    
+    %% 테스트 종료
+    Note over TestWorker,LogSystem: 테스트 종료 (총 실행시간: 8ms)
+    
+    %% 상세 설명
+    Note right of LogSystem: 로그 형식 설명:<br/>1. 일반 시작: [traceId] message<br/>2. 하위 시작: [traceId] |-->message<br/>3. 예외 종료: [traceId] |<X-message time=Xms ex=예외명<br/>4. 예외 종료: [traceId] message time=Xms ex=예외명<br/><br/>* <X- 표시는 예외 발생을 나타냄
