@@ -1,5 +1,6 @@
 package com.choongang.advanced.app.v2;
 
+import com.choongang.advanced.trace.TraceId;
 import com.choongang.advanced.trace.TraceStatus;
 import com.choongang.advanced.trace.hellotrace.HelloTraceV2;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +13,11 @@ public class OrderRepositoryV2 {
 
     private final HelloTraceV2 trace;
 
-    public void save(String itemId) {
+    public void save(TraceId traceId, String itemId) {
 
         TraceStatus status = null;
         try {
-            status = trace.begin("OrderRepositoryV1.save()");
+            status = trace.beginSync(traceId,"OrderRepositoryV2.save()");
 
             // 저장 로직
             if (itemId.equals("ex")) {

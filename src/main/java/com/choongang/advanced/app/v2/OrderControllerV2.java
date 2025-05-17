@@ -25,8 +25,8 @@ public class OrderControllerV2 {
         // 비즈니스 로직
         // 주문 요청
         try {
-            status = trace.begin("OrderControllerV1.request()");
-            orderService.orderItem(itemId);
+            status = trace.begin("OrderControllerV2.request()");
+            orderService.orderItem(status.getTraceId(), itemId);
             trace.end(status);
             return "ok";
         } catch (Exception e) {
