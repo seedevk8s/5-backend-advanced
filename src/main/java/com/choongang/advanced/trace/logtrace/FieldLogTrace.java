@@ -15,10 +15,19 @@ public class FieldLogTrace implements LogTrace{
 
     @Override
     public TraceStatus begin(String message) {
-        TraceId traceId = new TraceId();
+        syncTraceId();
+        TraceId traceId = traceIdHolder;
         long startTimeMs = System.currentTimeMillis();
         log.info("[{}] {}{}", traceId.getId(), addSpace(START_PREFIX, traceId.getLevel()), message);
         return new TraceStatus(traceId, startTimeMs, message);
+    }
+
+    private void syncTraceId() {
+        if (traceIdHolder == null) {
+            traceIdHolder = new TraceId();
+        } else {
+            traceIdHolder = traceIdHolder.createNextId();
+        }
     }
 
     @Override
@@ -37,6 +46,16 @@ public class FieldLogTrace implements LogTrace{
             log.info("[{}] {}{} time={}ms ex={}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), resultTimeMs, e.toString());
         }
 
+        releaseTraceId();
+
+    }
+
+    private void releaseTraceId() {
+        if (traceIdHolder.isFirstLevel()) {
+            traceIdHolder = null; // TraceId를 초기화
+        } else {
+            traceIdHolder = traceIdHolder.createPreviousId(); // TraceId의 레벨을 하나 줄임
+        }
     }
 
     @Override
