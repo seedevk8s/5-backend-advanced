@@ -27,7 +27,8 @@ public class FieldServiceTest {
          threadB.setName("thread-B");
 
          threadA.start();
-         sleep(2000);  // 동기화 문제 발생X
+         //sleep(2000);  // 동기화 문제 발생X
+         sleep(100);  // 동기화 문제 발생O
          threadB.start();
 
 
