@@ -1,0 +1,33 @@
+graph TD
+    subgraph "애플리케이션"
+        TL[ThreadLocal<UserContext>]
+        
+        subgraph "Thread 1"
+            T1[Thread 1]
+            UC1[UserContext: User A]
+            T1 -->|"get()"| UC1
+            UC1 -.-> TL
+        end
+        
+        subgraph "Thread 2"
+            T2[Thread 2]
+            UC2[UserContext: User B]
+            T2 -->|"get()"| UC2
+            UC2 -.-> TL
+        end
+        
+        subgraph "Thread 3"
+            T3[Thread 3]
+            UC3[UserContext: User C]
+            T3 -->|"get()"| UC3
+            UC3 -.-> TL
+        end
+    end
+    
+    classDef thread fill:#e1f5fe,stroke:#4fc3f7,stroke-width:2px;
+    classDef context fill:#f8bbd0,stroke:#f06292,stroke-width:2px;
+    classDef threadLocal fill:#fff9c4,stroke:#ffee58,stroke-width:2px;
+    
+    class T1,T2,T3 thread;
+    class UC1,UC2,UC3 context;
+    class TL threadLocal;
