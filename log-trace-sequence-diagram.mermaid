@@ -1,0 +1,79 @@
+sequenceDiagram
+    participant Test as FieldLogTraceTest
+    participant FLT as FieldLogTrace
+    participant TId as TraceId
+    participant TS as TraceStatus
+    
+    %% begin_end_level2 테스트 시나리오
+    rect rgb(240, 240, 255)
+        Note over Test,TS: begin_end_level2 테스트
+        Test->>FLT: begin("hello1")
+        FLT->>FLT: syncTraceId()
+        FLT->>+TId: new TraceId()
+        TId-->>-FLT: traceId
+        FLT->>FLT: log.info("[id] message")
+        FLT->>+TS: new TraceStatus(traceId, startTimeMs, message)
+        TS-->>-FLT: status1
+        FLT-->>Test: status1
+        
+        Test->>FLT: begin("hello2")
+        FLT->>FLT: syncTraceId()
+        FLT->>+TId: createNextId()
+        TId-->>-FLT: traceId(level+1)
+        FLT->>FLT: log.info("[id] |-->message")
+        FLT->>+TS: new TraceStatus(traceId, startTimeMs, message)
+        TS-->>-FLT: status2
+        FLT-->>Test: status2
+        
+        Test->>FLT: end(status2)
+        FLT->>FLT: complete(status, null)
+        FLT->>FLT: log.info("[id] |<--message time=Xms")
+        FLT->>FLT: releaseTraceId()
+        FLT->>+TId: createPreviousId()
+        TId-->>-FLT: traceId(level-1)
+        
+        Test->>FLT: end(status1)
+        FLT->>FLT: complete(status, null)
+        FLT->>FLT: log.info("[id] message time=Xms")
+        FLT->>FLT: releaseTraceId()
+        FLT->>+TId: isFirstLevel()
+        TId-->>-FLT: true
+        Note right of FLT: traceIdHolder = null
+    end
+    
+    %% begin_exception_level2 테스트 시나리오
+    rect rgb(255, 240, 240)
+        Note over Test,TS: begin_exception_level2 테스트
+        Test->>FLT: begin("hello1")
+        FLT->>FLT: syncTraceId()
+        FLT->>+TId: new TraceId()
+        TId-->>-FLT: traceId
+        FLT->>FLT: log.info("[id] message")
+        FLT->>+TS: new TraceStatus(traceId, startTimeMs, message)
+        TS-->>-FLT: status1
+        FLT-->>Test: status1
+        
+        Test->>FLT: begin("hello2")
+        FLT->>FLT: syncTraceId()
+        FLT->>+TId: createNextId()
+        TId-->>-FLT: traceId(level+1)
+        FLT->>FLT: log.info("[id] |-->message")
+        FLT->>+TS: new TraceStatus(traceId, startTimeMs, message)
+        TS-->>-FLT: status2
+        FLT-->>Test: status2
+        
+        Test->>FLT: exception(status2, IllegalStateException)
+        FLT->>FLT: complete(status, exception)
+        FLT->>FLT: log.info("[id] |<X-message time=Xms ex=exception")
+        FLT->>FLT: releaseTraceId()
+        FLT->>+TId: createPreviousId()
+        TId-->>-FLT: traceId(level-1)
+        
+        Test->>FLT: exception(status1, IllegalStateException)
+        FLT->>FLT: complete(status, exception)
+        FLT->>FLT: log.info("[id] message time=Xms ex=exception")
+        FLT->>FLT: releaseTraceId()
+        FLT->>+TId: isFirstLevel()
+        TId-->>-FLT: true
+        Note right of FLT: traceIdHolder = null
+    end
