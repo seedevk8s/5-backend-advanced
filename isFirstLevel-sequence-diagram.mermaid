@@ -1,0 +1,48 @@
+sequenceDiagram
+    participant Test as FieldLogTraceTest
+    participant FLT as FieldLogTrace
+    participant TId as TraceId
+    
+    Note over FLT,TId: traceIdHolder 값 변화와 isFirstLevel() 함수 동작
+    
+    Test->>+FLT: begin("hello1")
+    FLT->>FLT: syncTraceId()
+    Note right of FLT: traceIdHolder == null
+    FLT->>+TId: new TraceId()
+    Note right of TId: level = 0 설정
+    TId-->>-FLT: traceId 반환
+    Note right of FLT: traceIdHolder = 새 TraceId(level=0)
+    FLT-->>-Test: status1 반환
+    
+    Test->>+FLT: begin("hello2")
+    FLT->>FLT: syncTraceId()
+    Note right of FLT: traceIdHolder != null
+    FLT->>+TId: createNextId()
+    Note right of TId: 동일한 id, level+1=1 설정
+    TId-->>-FLT: 새 TraceId(level=1) 반환
+    Note right of FLT: traceIdHolder = 새 TraceId(level=1)
+    FLT-->>-Test: status2 반환
+    
+    Test->>+FLT: end(status2)
+    FLT->>FLT: complete(status2, null)
+    FLT->>FLT: releaseTraceId()
+    FLT->>+TId: isFirstLevel()
+    Note right of TId: level == 0 ? true : false
+    Note right of TId: level = 1이므로 false 반환
+    TId-->>-FLT: false
+    FLT->>+TId: createPreviousId()
+    Note right of TId: 동일한 id, level-1=0 설정
+    TId-->>-FLT: 새 TraceId(level=0) 반환
+    Note right of FLT: traceIdHolder = 새 TraceId(level=0)
+    FLT-->>-Test: void
+    
+    Test->>+FLT: end(status1)
+    FLT->>FLT: complete(status1, null)
+    FLT->>FLT: releaseTraceId()
+    FLT->>+TId: isFirstLevel()
+    Note right of TId: level = 0이므로 true 반환
+    TId-->>-FLT: true
+    Note right of FLT: traceIdHolder = null 설정
+    FLT-->>-Test: void
+    
+    Note over FLT,TId: 다음 트랜잭션 시작시 traceIdHolder는 null 상태가 됨
