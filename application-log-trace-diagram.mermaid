@@ -1,0 +1,85 @@
+sequenceDiagram
+    participant Client as 클라이언트
+    participant Controller as OrderControllerV3
+    participant Service as OrderServiceV3
+    participant Repository as OrderRepositoryV3
+    participant FLT as FieldLogTrace
+
+    %% 정상 요청 흐름
+    rect rgb(240, 255, 240)
+        Note over Client,Repository: 정상 요청 흐름 (/v3/request)
+        Client->>+Controller: GET /v3/request
+        Controller->>+FLT: begin("OrderControllerV3.request()")
+        Note right of FLT: traceIdHolder = null,<br/>새 트랜잭션 ID 생성 [3c3d1caf]<br/>level = 0
+        FLT-->>-Controller: status 반환
+        Controller->>+Service: orderItem(itemId)
+        
+        Service->>+FLT: begin("OrderServiceV3.orderItem()")
+        Note right of FLT: 기존 트랜잭션 ID 유지 [3c3d1caf]<br/>level = 1로 증가<br/>로그: |-->
+        FLT-->>-Service: status 반환
+        Service->>+Repository: save(itemId)
+        
+        Repository->>+FLT: begin("OrderRepositoryV3.save()")
+        Note right of FLT: 기존 트랜잭션 ID 유지 [3c3d1caf]<br/>level = 2로 증가<br/>로그: |   |-->
+        FLT-->>-Repository: status 반환
+        Note over Repository: 저장 로직 수행(1004ms)
+        Repository->>+FLT: end(status)
+        Note right of FLT: level = 1로 감소<br/>로그: |   |<--<br/>time=1004ms
+        FLT-->>-Repository: void
+        Repository-->>-Service: void
+        
+        Service->>+FLT: end(status)
+        Note right of FLT: level = 0으로 감소<br/>로그: |<--<br/>time=1005ms
+        FLT-->>-Service: void
+        Service-->>-Controller: void
+        
+        Controller->>+FLT: end(status)
+        Note right of FLT: isFirstLevel() = true<br/>traceIdHolder = null 설정<br/>로그: time=1005ms
+        FLT-->>-Controller: void
+        Controller-->>-Client: "ok" 응답
+    end
+    
+    %% 예외 발생 흐름
+    rect rgb(255, 240, 240)
+        Note over Client,Repository: 예외 발생 흐름 (/v3/request?itemId=ex)
+        Client->>+Controller: GET /v3/request?itemId=ex
+        Controller->>+FLT: begin("OrderControllerV3.request()")
+        Note right of FLT: traceIdHolder = null,<br/>새 트랜잭션 ID 생성 [0e983225]<br/>level = 0
+        FLT-->>-Controller: status 반환
+        Controller->>+Service: orderItem("ex")
+        
+        Service->>+FLT: begin("OrderServiceV3.orderItem()")
+        Note right of FLT: 기존 트랜잭션 ID 유지 [0e983225]<br/>level = 1로 증가<br/>로그: |-->
+        FLT-->>-Service: status 반환
+        Service->>+Repository: save("ex")
+        
+        Repository->>+FLT: begin("OrderRepositoryV3.save()")
+        Note right of FLT: 기존 트랜잭션 ID 유지 [0e983225]<br/>level = 2로 증가<br/>로그: |   |-->
+        FLT-->>-Repository: status 반환
+        Note over Repository: 예외 발생!<br/>if(itemId.equals("ex"))
+        Repository->>+FLT: exception(status, IllegalStateException)
+        Note right of FLT: level = 1로 감소<br/>로그: |   |<X-<br/>time=1ms ex=예외 발생!
+        FLT-->>-Repository: void
+        Repository--x Service: throw IllegalStateException
+        
+        Service->>+FLT: exception(status, IllegalStateException)
+        Note right of FLT: level = 0으로 감소<br/>로그: |<X-<br/>time=1ms ex=예외 발생!
+        FLT-->>-Service: void
+        Service--x Controller: throw IllegalStateException
+        
+        Controller->>+FLT: exception(status, IllegalStateException)
+        Note right of FLT: isFirstLevel() = true<br/>traceIdHolder = null 설정<br/>로그: time=1ms ex=예외 발생!
+        FLT-->>-Controller: void
+        Controller--x Client: 500 에러 응답
+        Note over Client: 예외 스택 트레이스
+    end
+
+    %% 스프링 빈 구성
+    rect rgb(240, 240, 255)
+        Note over Client,FLT: 스프링 빈 구성
+        note right of Client: LogTraceConfig
+        note right of Client: @Bean → FieldLogTrace
+        Note over Controller: @Autowired<br/>private final LogTrace trace;
+        Note over Service: @Autowired<br/>private final LogTrace trace;
+        Note over Repository: @Autowired<br/>private final LogTrace trace;
+    end
