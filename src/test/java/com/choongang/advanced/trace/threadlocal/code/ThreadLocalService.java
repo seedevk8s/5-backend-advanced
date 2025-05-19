@@ -22,4 +22,10 @@ public class ThreadLocalService {
             e.printStackTrace();
         }
     }
+
+    // 별도의 정리 메서드 제공
+    public void clearNameStore() {
+        nameStore.remove();
+        log.info("ThreadLocal 값 제거 완료");
+    }
 }
