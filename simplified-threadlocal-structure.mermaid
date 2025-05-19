@@ -1,0 +1,11 @@
+flowchart TD
+    TL[ThreadLocal 객체] --> T1[Thread 1]
+    TL --> T2[Thread 2]
+    T1 --> V1[값: TraceId-1]
+    T2 --> V2[값: TraceId-2]
+    
+    style TL fill:#f96,stroke:#333,stroke-width:2px
+    style T1 fill:#bbf,stroke:#333,stroke-width:1px
+    style T2 fill:#bbf,stroke:#333,stroke-width:1px
+    style V1 fill:#bfb,stroke:#333,stroke-width:1px
+    style V2 fill:#bfb,stroke:#333,stroke-width:1px

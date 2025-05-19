@@ -1,0 +1,30 @@
+sequenceDiagram
+    participant MainThread as 메인 스레드
+    participant ThreadA as 스레드 A
+    participant ThreadLocal as ThreadLocal 저장소
+    participant ThreadB as 스레드 B
+    
+    MainThread->>MainThread: 테스트 시작
+    MainThread->>ThreadA: thread-A 시작
+    
+    ThreadA->>ThreadLocal: nameStore.get() [null 반환]
+    Note over ThreadA,ThreadLocal: 저장 name = userA -> nameStore=null
+    
+    ThreadA->>ThreadLocal: nameStore.set("userA")
+    ThreadA->>ThreadA: sleep(1000)
+    
+    ThreadA->>ThreadLocal: nameStore.get() ["userA" 반환]
+    Note over ThreadA,ThreadLocal: 조회 nameStore=userA
+    
+    MainThread->>ThreadB: thread-B 시작
+    
+    ThreadB->>ThreadLocal: nameStore.get() [null 반환]
+    Note over ThreadB,ThreadLocal: 저장 name = userB -> nameStore=null
+    
+    ThreadB->>ThreadLocal: nameStore.set("userB")
+    ThreadB->>ThreadB: sleep(1000)
+    
+    ThreadB->>ThreadLocal: nameStore.get() ["userB" 반환]
+    Note over ThreadB,ThreadLocal: 조회 nameStore=userB
+    
+    MainThread->>MainThread: 테스트 종료

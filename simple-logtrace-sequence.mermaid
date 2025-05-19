@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant App as 애플리케이션
+    participant LogTrace as LogTrace
+    participant TL as ThreadLocal
+    
+    App->>LogTrace: begin("hello1")
+    LogTrace->>TL: get() [null]
+    LogTrace->>TL: set(new TraceId())
+    LogTrace-->>App: 로그: [tx1] hello1
+    
+    App->>LogTrace: begin("hello2")
+    LogTrace->>TL: get() [level=0]
+    LogTrace->>TL: set(nextId()) [level=1]
+    LogTrace-->>App: 로그: [tx1] |-->hello2
+    
+    App->>LogTrace: end(status2)
+    LogTrace->>TL: get() [level=1]
+    LogTrace->>TL: set(previousId()) [level=0]
+    LogTrace-->>App: 로그: [tx1] |<--hello2 time=10ms
+    
+    App->>LogTrace: end(status1)
+    LogTrace->>TL: get() [level=0]
+    LogTrace->>TL: remove()
+    LogTrace-->>App: 로그: [tx1] hello1 time=20ms

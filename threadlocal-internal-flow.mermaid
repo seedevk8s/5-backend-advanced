@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant Service as ThreadLocalService
+    participant ThreadLocal
+    participant Thread as 각 스레드
+    
+    Service->>ThreadLocal: 1. nameStore.get()<br>현재 스레드의 값 조회
+    ThreadLocal->>Thread: 2. 현재 실행 중인<br>스레드 식별
+    Thread-->>ThreadLocal: 3. 스레드 ID 반환
+    ThreadLocal->>ThreadLocal: 4. 해당 스레드의<br>ThreadLocalMap 조회
+    ThreadLocal-->>Service: 5. 현재 스레드의<br>저장된 값 반환
+    
+    Service->>ThreadLocal: 6. nameStore.set(value)<br>값 저장 요청
+    ThreadLocal->>Thread: 7. 현재 실행 중인<br>스레드 식별
+    Thread-->>ThreadLocal: 8. 스레드 ID 반환
+    ThreadLocal->>ThreadLocal: 9. 해당 스레드의<br>ThreadLocalMap에 값 저장
+    ThreadLocal-->>Service: 10. 저장 완료
+    
+    Note over Service,Thread: ThreadLocal은 스레드 ID를 키로 사용하여<br>각 스레드마다 독립적인 저장소 제공

@@ -1,0 +1,18 @@
+classDiagram
+    class ThreadLocalService {
+        -ThreadLocal~String~ nameStore
+        +String logic(String name)
+        -void sleep(int millis)
+        +void clearNameStore()
+    }
+    
+    class ThreadLocalServiceTest {
+        -ThreadLocalService service
+        +void field()
+        -void sleep(int i)
+    }
+    
+    ThreadLocalServiceTest --> ThreadLocalService : 사용
+
+    note for ThreadLocalService "각 스레드별 독립적인\n데이터 저장소 제공"
+    note for ThreadLocalServiceTest "두 스레드(A,B)를 생성하여\n각각 독립적으로 서비스 사용"

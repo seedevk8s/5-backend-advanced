@@ -1,0 +1,41 @@
+graph TD
+    subgraph "ThreadLocalLogTrace 로그 형식"
+        Format["[트랜잭션ID] 들여쓰기+접두사 메시지 time=처리시간ms ex=예외"]
+        
+        subgraph "접두사 종류"
+            Start["시작: -->"]
+            Complete["정상 종료: <--"]
+            Exception["예외 종료: <X-"]
+        end
+        
+        subgraph "들여쓰기 규칙"
+            Level0["|    없음 (레벨 0)"]
+            Level1["|-->  (레벨 1)"]
+            Level2["|   |-->  (레벨 2)"]
+            Level3["|   |   |-->  (레벨 3)"]
+        end
+        
+        subgraph "로그 처리 흐름"
+            Begin["begin(message):<br>레벨 증가, 시작 로그 기록"]
+            End["end(status):<br>종료 로그 기록, 레벨 감소"]
+            ExceptionLog["exception(status, e):<br>예외 로그 기록, 레벨 감소"]
+        end
+    end
+    
+    Format --> Start
+    Format --> Complete
+    Format --> Exception
+    
+    Format --> Level0
+    Format --> Level1
+    Format --> Level2
+    Format --> Level3
+    
+    Format --> Begin
+    Format --> End
+    Format --> ExceptionLog
+    
+    style Format fill:#f9f,stroke:#333,stroke-width:2px
+    style Start fill:#bfb,stroke:#333,stroke-width:1px
+    style Complete fill:#bfb,stroke:#333,stroke-width:1px
+    style Exception fill:#fbb,stroke:#333,stroke-width:1px
