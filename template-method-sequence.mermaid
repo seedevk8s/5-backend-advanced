@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant Client as 클라이언트
+    participant Template as AbstractTemplate
+    participant Sub1 as SubClassLogic1
+    participant Sub2 as SubClassLogic2
+    
+    %% 첫 번째 케이스
+    Client->>Sub1: new SubClassLogic1()
+    Client->>Template: template1.execute()
+    activate Template
+    Note over Template: 시간 측정 시작
+    Template->>Sub1: call()
+    activate Sub1
+    Sub1-->>Template: 비즈니스 로직1 실행 완료
+    deactivate Sub1
+    Note over Template: 시간 측정 종료
+    Template-->>Client: 로그 출력 (실행 시간)
+    deactivate Template
+    
+    %% 두 번째 케이스
+    Client->>Sub2: new SubClassLogic2()
+    Client->>Template: template2.execute()
+    activate Template
+    Note over Template: 시간 측정 시작
+    Template->>Sub2: call()
+    activate Sub2
+    Sub2-->>Template: 비즈니스 로직2 실행 완료
+    deactivate Sub2
+    Note over Template: 시간 측정 종료
+    Template-->>Client: 로그 출력 (실행 시간)
+    deactivate Template
