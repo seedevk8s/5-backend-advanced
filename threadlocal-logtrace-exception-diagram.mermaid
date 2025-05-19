@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant Client as 클라이언트
+    participant ThreadLocalLogTrace as LogTrace
+    participant TraceId as TraceId 객체
+    participant ThreadLocal as ThreadLocal 저장소
+    participant Exception as 예외 발생
+    
+    Note over Client,Exception: 이미지 2: 예외 케이스 실행 (begin_exception_level2 테스트)
+    
+    Client->>ThreadLocalLogTrace: begin("hello1")
+    ThreadLocalLogTrace->>ThreadLocal: traceIdHolder.get() [null 반환]
+    ThreadLocalLogTrace->>TraceId: new TraceId() 생성
+    TraceId-->>ThreadLocalLogTrace: 새 TraceId 반환 [c4fb118b] level=0
+    ThreadLocalLogTrace->>ThreadLocal: traceIdHolder.set(traceId)
+    ThreadLocalLogTrace-->>Client: TraceStatus 반환
+    Note right of ThreadLocalLogTrace: [c4fb118b] hello1
+    
+    Client->>ThreadLocalLogTrace: begin("hello2")
+    ThreadLocalLogTrace->>ThreadLocal: traceIdHolder.get() [traceId 반환]
+    ThreadLocalLogTrace->>TraceId: createNextId() [레벨 증가]
+    TraceId-->>ThreadLocalLogTrace: 증가된 TraceId 반환 [c4fb118b] level=1
+    ThreadLocalLogTrace->>ThreadLocal: traceIdHolder.set(nextId)
+    ThreadLocalLogTrace-->>Client: TraceStatus 반환
+    Note right of ThreadLocalLogTrace: [c4fb118b] |-->hello2
+    
+    Client->>Exception: throw IllegalStateException
+    Exception-->>ThreadLocalLogTrace: exception(status2, IllegalStateException)
+    ThreadLocalLogTrace->>TraceId: 현재 TraceId [c4fb118b] level=1
+    ThreadLocalLogTrace->>ThreadLocalLogTrace: complete 메서드 실행
+    Note right of ThreadLocalLogTrace: [c4fb118b] |<X-hello2 time=0ms ex=java.lang.IllegalStateException
+    ThreadLocalLogTrace->>TraceId: createPreviousId() [레벨 감소]
+    TraceId-->>ThreadLocalLogTrace: 감소된 TraceId 반환 [c4fb118b] level=0
+    ThreadLocalLogTrace->>ThreadLocal: traceIdHolder.set(previousId)
+    
+    Client->>ThreadLocalLogTrace: exception(status1, IllegalStateException)
+    ThreadLocalLogTrace->>TraceId: 현재 TraceId [c4fb118b] level=0
+    ThreadLocalLogTrace->>ThreadLocalLogTrace: complete 메서드 실행
+    Note right of ThreadLocalLogTrace: [c4fb118b] hello1 time=0ms ex=java.lang.IllegalStateException
+    ThreadLocalLogTrace->>ThreadLocal: traceIdHolder.remove() [첫 번째 레벨이므로 제거]
