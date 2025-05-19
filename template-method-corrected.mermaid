@@ -1,0 +1,24 @@
+classDiagram
+    AbstractTemplate <|-- SubClassLogic1
+    AbstractTemplate <|-- SubClassLogic2
+    TemplateMethodTest --> AbstractTemplate : uses
+    TemplateMethodTest --> SubClassLogic1 : uses
+    TemplateMethodTest --> SubClassLogic2 : uses
+    
+    class AbstractTemplate {
+        +execute()
+        #abstract call()
+    }
+    
+    class SubClassLogic1 {
+        #call()
+    }
+    
+    class SubClassLogic2 {
+        #call()
+    }
+    
+    class TemplateMethodTest {
+        +templateMethodV0()
+        +templateMethodV1()
+    }
