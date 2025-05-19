@@ -1,0 +1,29 @@
+graph TD
+    subgraph "ThreadLocal 동작 원리"
+        A[JVM Heap 메모리]
+        
+        subgraph "ThreadLocal 객체"
+            TL[ThreadLocal nameStore]
+        end
+        
+        subgraph "스레드별 저장소"
+            TA[Thread A<br>ThreadLocalMap]
+            TB[Thread B<br>ThreadLocalMap]
+        end
+        
+        subgraph "저장된 값"
+            VA["userA"]
+            VB["userB"]
+        end
+        
+        TL --> TA
+        TL --> TB
+        TA --> VA
+        TB --> VB
+    end
+    
+    style TL fill:#f9f,stroke:#333,stroke-width:2px
+    style TA fill:#bbf,stroke:#333,stroke-width:1px
+    style TB fill:#bbf,stroke:#333,stroke-width:1px
+    style VA fill:#bfb,stroke:#333,stroke-width:1px
+    style VB fill:#bfb,stroke:#333,stroke-width:1px
