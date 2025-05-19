@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant MainThread as 메인 스레드
+    participant ThreadA as 스레드 A
+    participant ThreadLocalA as ThreadLocal<br>(스레드 A 저장소)
+    participant ThreadLocalB as ThreadLocal<br>(스레드 B 저장소) 
+    participant ThreadB as 스레드 B
+    
+    MainThread->>MainThread: 테스트 시작
+    MainThread->>ThreadA: thread-A 시작
+    
+    ThreadA->>ThreadLocalA: nameStore.get() [null 반환]
+    Note over ThreadA,ThreadLocalA: 저장 name = userA -> nameStore=null
+    
+    ThreadA->>ThreadLocalA: nameStore.set("userA")
+    
+    MainThread->>ThreadB: thread-B 시작 (A가 아직 실행 중)
+    
+    ThreadB->>ThreadLocalB: nameStore.get() [null 반환]
+    Note over ThreadB,ThreadLocalB: 저장 name = userB -> nameStore=null
+    
+    ThreadB->>ThreadLocalB: nameStore.set("userB")
+    
+    ThreadA->>ThreadA: sleep 계속 진행 중...
+    ThreadB->>ThreadB: sleep 계속 진행 중...
+    
+    ThreadA->>ThreadLocalA: nameStore.get() ["userA" 반환]
+    Note over ThreadA,ThreadLocalA: 조회 nameStore=userA
+    
+    ThreadB->>ThreadLocalB: nameStore.get() ["userB" 반환]
+    Note over ThreadB,ThreadLocalB: 조회 nameStore=userB
+    
+    MainThread->>MainThread: 테스트 종료
