@@ -1,0 +1,51 @@
+classDiagram
+    class LogTrace {
+        <<interface>>
+        +TraceStatus begin(String message)
+        +void end(TraceStatus status)
+        +void exception(TraceStatus status, Exception e)
+    }
+    
+    class ThreadLocalLogTrace {
+        -String START_PREFIX
+        -String COMPLETE_PREFIX
+        -String EX_PREFIX
+        -ThreadLocal~TraceId~ traceIdHolder
+        +TraceStatus begin(String message)
+        +void end(TraceStatus status)
+        +void exception(TraceStatus status, Exception e)
+        -void syncTraceId()
+        -void complete(TraceStatus status, Exception e)
+        -void releaseTraceId()
+        -String addSpace(String prefix, int level)
+    }
+    
+    class TraceStatus {
+        -TraceId traceId
+        -Long startTimeMs
+        -String message
+    }
+    
+    class TraceId {
+        -String id
+        -int level
+        +createNextId()
+        +createPreviousId()
+        +isFirstLevel()
+    }
+    
+    class ThreadLocalLogTraceTest {
+        -ThreadLocalLogTrace trace
+        +void begin_end_level2()
+        +void begin_exception_level2()
+    }
+    
+    LogTrace <|-- ThreadLocalLogTrace : 구현
+    ThreadLocalLogTrace --> TraceId : 사용
+    ThreadLocalLogTrace --> TraceStatus : 생성 및 사용
+    ThreadLocalLogTraceTest --> ThreadLocalLogTrace : 테스트
+    TraceStatus --> TraceId : 포함
+    
+    note for ThreadLocalLogTrace "스레드별 독립적인 로그 추적 구현"
+    note for TraceId "트랜잭션 ID와 계층 레벨 관리"
+    note for TraceStatus "로그 추적 상태 정보 관리"
