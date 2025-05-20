@@ -1,0 +1,31 @@
+sequenceDiagram
+    actor Client
+    participant Controller as OrderControllerV4
+    participant Template as AbstractTemplate
+    
+    Client->>Controller: request(itemId)
+    
+    Controller->>Template: new AbstractTemplate<>(trace)
+    
+    Controller->>Template: execute("message")
+    
+    activate Template
+    Note over Template: 템플릿 메서드(고정된 알고리즘 골격)
+    
+    Template->>Template: trace.begin(message)
+    
+    Template->>Controller: call()
+    activate Controller
+    Note over Controller: 훅 메서드(서브클래스에서 구현)
+    Controller->>Controller: 비즈니스 로직 실행
+    Controller-->>Template: 결과 반환
+    deactivate Controller
+    
+    Template->>Template: trace.end(status)
+    
+    Template-->>Controller: 최종 결과 반환
+    deactivate Template
+    
+    Controller-->>Client: "ok"
+    
+    note right of Template: "템플릿 메서드 패턴의 실행 흐름:\n1. execute()가 전체 알고리즘 제어\n2. call()은 서브클래스에서 구현한 훅\n3. 제어의 역전(IoC) 발생"
