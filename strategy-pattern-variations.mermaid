@@ -1,0 +1,30 @@
+flowchart TD
+    subgraph "전략 패턴의 핵심 구성 요소"
+        S[Strategy 인터페이스] --> S1[ConcreteStrategy A]
+        S --> S2[ConcreteStrategy B]
+        S --> S3[ConcreteStrategy C]
+        C[Context] --> S
+    end
+    
+    subgraph "다양한 컨텍스트 구현 방식"
+        CV1[ContextV1]
+        CV2[ContextV2]
+        
+        CV1 --> |"생성자 주입\n(전략을 필드로 보관)"|D1[전략 보관형]
+        CV2 --> |"파라미터 전달\n(메서드 호출마다 전략 주입)"|D2[전략 파라미터형]
+    end
+    
+    subgraph "전략 구현 방식"
+        I1[일반 클래스]
+        I2[익명 내부 클래스]
+        I3[람다]
+        
+        I1 --> |"재사용 가능\n명시적인 클래스"|E1[명시적 구현]
+        I2 --> |"일회성 사용\n코드 간결화"|E2[익명 구현]
+        I3 --> |"함수형 인터페이스\n더 간결한 구현"|E3[람다 구현]
+    end
+    
+    style S fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style CV1 fill:#dfd,stroke:#333,stroke-width:2px
+    style CV2 fill:#dfd,stroke:#333,stroke-width:2px
