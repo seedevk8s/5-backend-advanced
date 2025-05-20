@@ -82,6 +82,30 @@ public class ContextV1Test {
         log.info("strategyLogic2={}", strategyLogic2.getClass());
         context2.execute();
     }
+
+    @Test
+    void strategyV3() {
+        // Client Code
+        ContextV1 context1 = new ContextV1(new Strategy() {
+            @Override
+            public void call() {
+                log.info("비즈니스 로직1 실행");
+            }
+        }); // 전략을 주입합니다.
+        context1.execute();
+
+        ContextV1 context2 = new ContextV1(new Strategy() {
+            @Override
+            public void call() {
+                log.info("비즈니스 로직2 실행");
+            }
+        }); // 전략을 주입합니다.
+        context2.execute();
+    }
+
+    /**
+     * 람다식을 사용하여 전략을 구현합니다.
+     */
 }
 
 
