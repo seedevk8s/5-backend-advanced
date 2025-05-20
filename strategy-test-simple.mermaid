@@ -1,0 +1,24 @@
+classDiagram
+    class StrategyTest {
+        +strategyV1()
+        +strategyV2()
+    }
+    
+    class AnonymousStrategy1 {
+        +call()
+    }
+    
+    class AnonymousStrategy2 {
+        +call()
+    }
+    
+    class ContextV1 {
+        -Strategy strategy
+        +execute()
+    }
+    
+    StrategyTest ..> AnonymousStrategy1 : creates
+    StrategyTest ..> AnonymousStrategy2 : creates
+    StrategyTest ..> ContextV1 : creates
+    ContextV1 --> AnonymousStrategy1 : uses
+    ContextV1 --> AnonymousStrategy2 : uses
