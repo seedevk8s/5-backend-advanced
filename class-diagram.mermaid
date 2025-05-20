@@ -1,0 +1,60 @@
+classDiagram
+    class LogTrace {
+        <<interface>>
+        +begin(message) TraceStatus
+        +end(status) void
+        +exception(status, e) void
+    }
+    
+    class FieldLogTrace {
+        -traceIdHolder ThreadLocal~TraceId~
+        +begin(message) TraceStatus
+        +end(status) void
+        +exception(status, e) void
+    }
+    
+    class TraceStatus {
+        +traceId TraceId
+        +startTimeMs long
+        +message String
+    }
+    
+    class TraceId {
+        -id String
+        -level int
+        +createNextId() TraceId
+        +createPreviousId() TraceId
+    }
+    
+    class LogTraceConfig {
+        +logTrace() LogTrace
+    }
+    
+    class OrderControllerV3 {
+        -orderService OrderServiceV3
+        -trace LogTrace
+        +request(itemId) String
+    }
+    
+    class OrderServiceV3 {
+        -orderRepository OrderRepositoryV3
+        -trace LogTrace
+        +orderItem(itemId) void
+    }
+    
+    class OrderRepositoryV3 {
+        -trace LogTrace
+        +save(itemId) void
+        -sleep(millis) void
+    }
+    
+    LogTrace <|.. FieldLogTrace : implements
+    LogTraceConfig --> LogTrace : creates
+    OrderControllerV3 --> OrderServiceV3 : uses
+    OrderServiceV3 --> OrderRepositoryV3 : uses
+    OrderControllerV3 --> LogTrace : uses
+    OrderServiceV3 --> LogTrace : uses
+    OrderRepositoryV3 --> LogTrace : uses
+    FieldLogTrace --> TraceStatus : creates
+    FieldLogTrace --> TraceId : uses
+    TraceStatus --> TraceId : contains
