@@ -1,0 +1,28 @@
+classDiagram
+    class AbstractClass {
+        +templateMethod()
+        #primitiveOperation1()
+        #primitiveOperation2()
+    }
+    
+    class ConcreteClass {
+        #primitiveOperation1()
+        #primitiveOperation2()
+    }
+    
+    AbstractClass <|-- ConcreteClass
+    
+    class AbstractTemplate {
+        -LogTrace trace
+        +execute(message)
+        #call()
+    }
+    
+    class AnonymousTemplate {
+        #call()
+    }
+    
+    AbstractTemplate <|-- AnonymousTemplate
+    
+    note for AbstractClass "GOF의 템플릿 메서드 패턴"
+    note for AbstractTemplate "V4 구현"
