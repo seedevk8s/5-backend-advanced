@@ -1,0 +1,21 @@
+flowchart TD
+    A[Client] --> B[OrderControllerV3]
+    B --> C[LogTrace]
+    B --> D[OrderServiceV3]
+    D --> C
+    D --> E[OrderRepositoryV3]
+    E --> C
+    
+    C --> F[TraceStatus]
+    F --> G[TraceId]
+    
+    E --> H{itemId == ex?}
+    H -->|Yes| I[Exception]
+    H -->|No| J[Processing]
+    
+    I --> C
+    J --> C
+    
+    E --> D
+    D --> B
+    B --> A
