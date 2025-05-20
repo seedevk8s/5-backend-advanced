@@ -1,0 +1,30 @@
+classDiagram
+    class Strategy {
+        <<interface>>
+        +call()
+    }
+    
+    class ContextV1 {
+        -Strategy strategy
+        +ContextV1(Strategy strategy)
+        +execute()
+    }
+    
+    class AnonymousStrategy1 {
+        +call()
+    }
+    
+    class AnonymousStrategy2 {
+        +call()
+    }
+    
+    class Client {
+        +strategyV2()
+    }
+    
+    Strategy <|.. AnonymousStrategy1 : implements
+    Strategy <|.. AnonymousStrategy2 : implements
+    ContextV1 --> Strategy : uses
+    Client ..> AnonymousStrategy1 : creates
+    Client ..> AnonymousStrategy2 : creates
+    Client ..> ContextV1 : creates
