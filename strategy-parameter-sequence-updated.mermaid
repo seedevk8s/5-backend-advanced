@@ -1,0 +1,105 @@
+sequenceDiagram
+    participant Client as ContextV2Test
+    participant Context as ContextV2
+    participant Logic1 as StrategyLogic1
+    participant Logic2 as StrategyLogic2
+    participant Anonymous1 as "Anonymous Strategy 1"
+    participant Anonymous2 as "Anonymous Strategy 2"
+    participant Lambda1 as "Lambda Strategy 1"
+    participant Lambda2 as "Lambda Strategy 2"
+    
+    rect rgb(200, 220, 240)
+    note right of Client: strategyV1() 테스트
+    Client->>Context: new ContextV2()
+    Client->>Logic1: new StrategyLogic1()
+    Client->>Context: execute(strategyLogic1)
+    
+    activate Context
+    Context->>Logic1: call()
+    
+    activate Logic1
+    Logic1->>Logic1: log.info("비즈니스 로직1 실행")
+    Logic1-->>Context: return
+    deactivate Logic1
+    
+    Context-->>Client: return
+    deactivate Context
+    
+    Client->>Logic2: new StrategyLogic2()
+    Client->>Context: execute(strategyLogic2)
+    
+    activate Context
+    Context->>Logic2: call()
+    
+    activate Logic2
+    Logic2->>Logic2: log.info("비즈니스 로직2 실행")
+    Logic2-->>Context: return
+    deactivate Logic2
+    
+    Context-->>Client: return
+    deactivate Context
+    end
+    
+    rect rgb(220, 240, 200)
+    note right of Client: strategyV2() 테스트 - 익명 내부 클래스
+    Client->>Context: new ContextV2()
+    Client->>Anonymous1: new Strategy() { ... }
+    Client->>Context: execute(anonymous1)
+    
+    activate Context
+    Context->>Anonymous1: call()
+    
+    activate Anonymous1
+    Anonymous1->>Anonymous1: log.info("비즈니스 로직1 실행")
+    Anonymous1-->>Context: return
+    deactivate Anonymous1
+    
+    Context-->>Client: return
+    deactivate Context
+    
+    Client->>Anonymous2: new Strategy() { ... }
+    Client->>Context: execute(anonymous2)
+    
+    activate Context
+    Context->>Anonymous2: call()
+    
+    activate Anonymous2
+    Anonymous2->>Anonymous2: log.info("비즈니스 로직2 실행")
+    Anonymous2-->>Context: return
+    deactivate Anonymous2
+    
+    Context-->>Client: return
+    deactivate Context
+    end
+    
+    rect rgb(240, 220, 200)
+    note right of Client: strategyV3() 테스트 - 람다
+    Client->>Context: new ContextV2()
+    Client->>Lambda1: () -> log.info("비즈니스 로직1 실행")
+    Client->>Context: execute(lambda1)
+    
+    activate Context
+    Context->>Lambda1: call()
+    
+    activate Lambda1
+    Lambda1->>Lambda1: log.info("비즈니스 로직1 실행")
+    Lambda1-->>Context: return
+    deactivate Lambda1
+    
+    Context-->>Client: return
+    deactivate Context
+    
+    Client->>Lambda2: () -> log.info("비즈니스 로직2 실행")
+    Client->>Context: execute(lambda2)
+    
+    activate Context
+    Context->>Lambda2: call()
+    
+    activate Lambda2
+    Lambda2->>Lambda2: log.info("비즈니스 로직2 실행")
+    Lambda2-->>Context: return
+    deactivate Lambda2
+    
+    Context-->>Client: return
+    deactivate Context
+    end
