@@ -1,0 +1,40 @@
+classDiagram
+    class LogTrace {
+        <<interface>>
+        +begin(message) TraceStatus
+        +end(status) void
+        +exception(status, e) void
+    }
+    
+    class Context {
+        -LogTrace logTrace
+        +Context(LogTrace logTrace)
+        +execute(logic, message) T
+    }
+    
+    class TraceStrategy {
+        <<interface>>
+        +call() T
+    }
+    
+    class ControllerStrategy {
+        -OrderService orderService
+        +ControllerStrategy(OrderService orderService)
+        +call() String
+    }
+    
+    class ServiceStrategy {
+        -OrderRepository orderRepository
+        +ServiceStrategy(OrderRepository orderRepository)
+        +call() void
+    }
+    
+    class RepositoryStrategy {
+        +call() void
+    }
+    
+    Context --> LogTrace : 사용
+    Context --> TraceStrategy : 사용
+    TraceStrategy <|.. ControllerStrategy : 구현
+    TraceStrategy <|.. ServiceStrategy : 구현
+    TraceStrategy <|.. RepositoryStrategy : 구현
