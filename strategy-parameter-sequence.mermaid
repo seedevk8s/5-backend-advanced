@@ -1,0 +1,34 @@
+sequenceDiagram
+    participant Client
+    participant Context as ContextV2
+    participant Logic1 as StrategyLogic1
+    participant Logic2 as StrategyLogic2
+    
+    Client->>Context: new ContextV2()
+    Client->>Logic1: new StrategyLogic1()
+    Client->>Context: execute(strategyLogic1)
+    
+    activate Context
+    Context->>Logic1: call()
+    
+    activate Logic1
+    Note over Logic1: 비즈니스 로직1 실행
+    Logic1-->>Context: return
+    deactivate Logic1
+    
+    Context-->>Client: return
+    deactivate Context
+    
+    Client->>Logic2: new StrategyLogic2()
+    Client->>Context: execute(strategyLogic2)
+    
+    activate Context
+    Context->>Logic2: call()
+    
+    activate Logic2
+    Note over Logic2: 비즈니스 로직2 실행
+    Logic2-->>Context: return
+    deactivate Logic2
+    
+    Context-->>Client: return
+    deactivate Context
