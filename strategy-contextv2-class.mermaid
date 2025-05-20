@@ -1,0 +1,30 @@
+classDiagram
+    class Strategy {
+        <<interface>>
+        +call() T
+    }
+    
+    class ContextV2 {
+        +execute(Strategy strategy) T
+    }
+    
+    class StrategyLogic1 {
+        +call() String
+    }
+    
+    class StrategyLogic2 {
+        +call() String
+    }
+    
+    class Client {
+        +main()
+    }
+    
+    Strategy <|.. StrategyLogic1 : implements
+    Strategy <|.. StrategyLogic2 : implements
+    ContextV2 ..> Strategy : uses
+    Client --> ContextV2 : creates
+    Client --> StrategyLogic1 : creates
+    Client --> StrategyLogic2 : creates
+    
+    note for ContextV2 "전략을 파라미터로 전달받는 컨텍스트\n메서드 호출 시마다 전략을 주입받음"
