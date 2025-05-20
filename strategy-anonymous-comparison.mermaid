@@ -1,0 +1,38 @@
+flowchart TD
+    subgraph "전략 패턴 구현 방식"
+        S[Strategy 인터페이스]
+        
+        subgraph "일반 클래스로 구현 (strategyV1)"
+            NS1[StrategyLogic1 클래스]
+            NS2[StrategyLogic2 클래스]
+            S --> NS1
+            S --> NS2
+        end
+        
+        subgraph "익명 내부 클래스로 구현 (strategyV2)"
+            AS1[익명 내부 클래스 1]
+            AS2[익명 내부 클래스 2]
+            S --> AS1
+            S --> AS2
+        end
+        
+        C[ContextV1 클래스]
+        C --> S
+    end
+    
+    subgraph "익명 내부 클래스 특징"
+        F1["이름 없는 클래스\n(컴파일 시 자동 생성)"]
+        F2["일회성 사용에 적합"]
+        F3["코드 간결화"]
+        F4["클래스 선언과 객체 생성을\n동시에 수행"]
+    end
+    
+    subgraph "클래스 생성 위치"
+        L1["일반 클래스: 독립된 .java 파일"]
+        L2["익명 클래스: 사용되는 위치에 인라인"]
+    end
+    
+    style S fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style AS1 fill:#dfd,stroke:#333,stroke-width:2px
+    style AS2 fill:#dfd,stroke:#333,stroke-width:2px
