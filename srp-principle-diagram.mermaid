@@ -1,0 +1,46 @@
+flowchart TB
+    subgraph "V3 구조 (SRP 위반)"
+        direction LR
+        A1[OrderControllerV3]
+        B1[OrderServiceV3]
+        C1[OrderRepositoryV3]
+        
+        subgraph "각 계층 코드 내부"
+            direction TB
+            D1["비즈니스 로직\n(주문 처리)"]
+            E1["로그 추적 로직\n(begin/end/exception)"]
+        end
+        
+        A1 --- D1
+        A1 --- E1
+        B1 --- D1
+        B1 --- E1
+        C1 --- D1
+        C1 --- E1
+    end
+    
+    subgraph "V4 구조 (SRP 준수)"
+        direction LR
+        A2[OrderControllerV4]
+        B2[OrderServiceV4]
+        C2[OrderRepositoryV4]
+        D2[AbstractTemplate]
+        
+        subgraph "책임 분리"
+            direction TB
+            E2["비즈니스 로직\n(각 계층 클래스에 구현)"]
+            F2["로그 추적 로직\n(AbstractTemplate에 구현)"]
+        end
+        
+        A2 --- E2
+        B2 --- E2
+        C2 --- E2
+        D2 --- F2
+        
+        A2 --> D2
+        B2 --> D2
+        C2 --> D2
+    end
+    
+    V3["V3: 각 클래스가 두 가지 책임을 가짐"] --> A1
+    V4["V4: 단일 책임 원칙 준수"] --> A2
