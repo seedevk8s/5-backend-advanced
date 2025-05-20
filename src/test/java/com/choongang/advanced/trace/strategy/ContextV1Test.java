@@ -83,6 +83,10 @@ public class ContextV1Test {
         context2.execute();
     }
 
+    /**
+     * 전략 패턴을 사용하여 비즈니스 로직을 분리합니다.
+     * 익명 내부 클래스 인라인 구현
+     */
     @Test
     void strategyV3() {
         // Client Code
@@ -106,6 +110,15 @@ public class ContextV1Test {
     /**
      * 람다식을 사용하여 전략을 구현합니다.
      */
+    @Test
+    void strategyV4() {
+        // Client Code
+        ContextV1 context1 = new ContextV1(() -> log.info("비즈니스 로직1 실행")); // 전략을 주입합니다.
+        context1.execute();
+
+        ContextV1 context2 = new ContextV1(() -> log.info("비즈니스 로직2 실행")); // 전략을 주입합니다.
+        context2.execute();
+    }
 }
 
 
