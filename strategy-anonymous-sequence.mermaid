@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant Client
+    participant AnonymousStrategy1 as "Anonymous Strategy 1"
+    participant ContextV1
+    participant AnonymousStrategy2 as "Anonymous Strategy 2"
+    
+    Client->>AnonymousStrategy1: new Strategy() { ... }
+    Client->>ContextV1: new ContextV1(strategyLogic1)
+    Client->>ContextV1: execute()
+    
+    activate ContextV1
+    ContextV1->>AnonymousStrategy1: call()
+    
+    activate AnonymousStrategy1
+    AnonymousStrategy1->>AnonymousStrategy1: log.info("비즈니스 로직1 실행")
+    AnonymousStrategy1-->>ContextV1: return
+    deactivate AnonymousStrategy1
+    
+    ContextV1-->>Client: return
+    deactivate ContextV1
+    
+    Client->>AnonymousStrategy2: new Strategy() { ... }
+    Client->>ContextV1: new ContextV1(strategyLogic2)
+    Client->>ContextV1: execute()
+    
+    activate ContextV1
+    ContextV1->>AnonymousStrategy2: call()
+    
+    activate AnonymousStrategy2
+    AnonymousStrategy2->>AnonymousStrategy2: log.info("비즈니스 로직2 실행")
+    AnonymousStrategy2-->>ContextV1: return
+    deactivate AnonymousStrategy2
+    
+    ContextV1-->>Client: return
+    deactivate ContextV1
