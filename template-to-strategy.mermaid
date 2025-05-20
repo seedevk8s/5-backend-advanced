@@ -1,0 +1,34 @@
+flowchart TD
+    subgraph "Template Method Pattern (V4)"
+        TM1[AbstractTemplate]
+        TM2[익명 내부 클래스]
+        TM3[템플릿 메서드: execute]
+        TM4[훅 메서드: call]
+        
+        TM1 --> TM2
+        TM1 --> TM3
+        TM1 --> TM4
+    end
+    
+    subgraph "Strategy Pattern (개선안)"
+        ST1[Context]
+        ST2[Strategy 인터페이스]
+        ST3[ConcreteStrategy 구현체]
+        
+        ST1 --> ST2
+        ST2 --> ST3
+    end
+    
+    TM1 -.변환.-> ST1
+    TM2 -.변환.-> ST3
+    TM3 -.변환.-> ST1
+    TM4 -.변환.-> ST2
+    
+    subgraph "주요 차이점"
+        D1[상속 vs 위임]
+        D2[클래스 확장 vs 객체 조합]
+        D3[내부 클래스 vs 독립 클래스]
+        
+        D1 --> D2
+        D2 --> D3
+    end
