@@ -1,0 +1,35 @@
+classDiagram
+    class Strategy {
+        <<interface>>
+        +call() T
+    }
+    
+    class ContextV1 {
+        -Strategy strategy
+        +ContextV1(Strategy strategy)
+        +execute() T
+    }
+    
+    class StrategyLogic1 {
+        +call() String
+    }
+    
+    class StrategyLogic2 {
+        +call() String
+    }
+    
+    class Client {
+        +main()
+    }
+    
+    Strategy <|.. StrategyLogic1 : implements
+    Strategy <|.. StrategyLogic2 : implements
+    ContextV1 --> Strategy : uses
+    Client --> ContextV1 : creates
+    Client --> StrategyLogic1 : creates
+    Client --> StrategyLogic2 : creates
+    
+    note for Strategy "전략을 정의하는 인터페이스\n각 전략이 구현해야 할 메서드 선언"
+    note for ContextV1 "전략을 사용하는 컨텍스트\n전략을 주입받고 실행하는 역할"
+    note for StrategyLogic1 "구체적인 전략 1\n실제 비즈니스 로직 구현"
+    note for StrategyLogic2 "구체적인 전략 2\n실제 비즈니스 로직 구현"
