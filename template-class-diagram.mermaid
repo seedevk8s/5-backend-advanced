@@ -1,0 +1,50 @@
+classDiagram
+    class AbstractTemplate~T~ {
+        <<abstract>>
+        -trace LogTrace
+        +AbstractTemplate(trace LogTrace)
+        +execute(message) T
+        #call() T
+    }
+    
+    class AnonymousTemplate~String~ {
+        #call() String
+    }
+    
+    class AnonymousTemplate~Void~ {
+        #call() Void
+    }
+    
+    class LogTrace {
+        <<interface>>
+        +begin(message) TraceStatus
+        +end(status) void
+        +exception(status, e) void
+    }
+    
+    class OrderControllerV4 {
+        -orderService OrderServiceV4
+        -trace LogTrace
+        +request(itemId) String
+    }
+    
+    class OrderServiceV4 {
+        -orderRepository OrderRepositoryV4
+        -trace LogTrace
+        +orderItem(itemId) void
+    }
+    
+    class OrderRepositoryV4 {
+        -trace LogTrace
+        +save(itemId) void
+        -sleep(millis) void
+    }
+    
+    AbstractTemplate <|-- AnonymousTemplate~String~ : extends
+    AbstractTemplate <|-- AnonymousTemplate~Void~ : extends
+    OrderControllerV4 ..> AnonymousTemplate~String~ : creates
+    OrderServiceV4 ..> AnonymousTemplate~Void~ : creates
+    OrderRepositoryV4 ..> AnonymousTemplate~Void~ : creates
+    AnonymousTemplate~String~ --> OrderServiceV4 : calls
+    AnonymousTemplate~Void~ --> OrderRepositoryV4 : calls
+    AbstractTemplate --> LogTrace : uses
