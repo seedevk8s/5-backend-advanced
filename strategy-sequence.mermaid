@@ -1,0 +1,31 @@
+sequenceDiagram
+    actor Client
+    participant Controller as OrderController
+    participant Context as TraceContext
+    participant Strategy as ControllerStrategy
+    participant Service as OrderService
+    
+    Client->>Controller: request(itemId)
+    activate Controller
+    
+    Controller->>Controller: 전략 객체 생성
+    Controller->>Strategy: new ControllerStrategy(orderService)
+    
+    Controller->>Context: execute(strategy, "OrderController.request()")
+    activate Context
+    
+    Context->>Context: trace.begin(message)
+    
+    Context->>Strategy: call()
+    activate Strategy
+    
+    Strategy->>Service: orderItem(itemId)
+    Strategy-->>Context: return "ok"
+    deactivate Strategy
+    
+    Context->>Context: trace.end(status)
+    Context-->>Controller: return result
+    deactivate Context
+    
+    Controller-->>Client: return "ok"
+    deactivate Controller
