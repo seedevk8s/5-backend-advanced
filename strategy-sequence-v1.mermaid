@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant Client
+    participant Context as ContextV1
+    participant ConcreteStrategy as StrategyLogic1
+    
+    Client->>ConcreteStrategy: new StrategyLogic1()
+    Client->>Context: new ContextV1(strategy)
+    Client->>Context: execute()
+    
+    activate Context
+    Context->>ConcreteStrategy: call()
+    
+    activate ConcreteStrategy
+    Note over ConcreteStrategy: 구체적인 알고리즘 실행
+    ConcreteStrategy-->>Context: return result
+    deactivate ConcreteStrategy
+    
+    Context-->>Client: return result
+    deactivate Context
