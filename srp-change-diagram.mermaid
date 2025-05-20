@@ -1,0 +1,38 @@
+graph TD
+    subgraph "변경의 이유 분석"
+        A["비즈니스 로직 변경"]
+        B["로그 추적 로직 변경"]
+    end
+    
+    subgraph "V3 구조 (SRP 위반)"
+        C["OrderControllerV3"]
+        D["OrderServiceV3"]
+        E["OrderRepositoryV3"]
+    end
+    
+    subgraph "V4 구조 (SRP 준수)"
+        F["OrderControllerV4"]
+        G["OrderServiceV4"]
+        H["OrderRepositoryV4"]
+        I["AbstractTemplate"]
+    end
+    
+    A --> C
+    A --> D
+    A --> E
+    B --> C
+    B --> D
+    B --> E
+    
+    A --> F
+    A --> G
+    A --> H
+    B --> I
+    
+    style C fill:#ffcccc
+    style D fill:#ffcccc
+    style E fill:#ffcccc
+    style F fill:#ccffcc
+    style G fill:#ccffcc
+    style H fill:#ccffcc
+    style I fill:#ccffcc
