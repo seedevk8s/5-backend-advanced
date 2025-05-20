@@ -1,0 +1,62 @@
+sequenceDiagram
+    participant Client
+    
+    box rgb(255, 220, 220) V3: SRP 위반
+        participant CV3 as OrderControllerV3
+        participant SV3 as OrderServiceV3
+        participant RV3 as OrderRepositoryV3
+    end
+    
+    box rgb(220, 255, 220) V4: SRP 준수
+        participant CV4 as OrderControllerV4
+        participant TC as AbstractTemplate<String>
+        participant SV4 as OrderServiceV4
+        participant TS as AbstractTemplate<Void>
+        participant RV4 as OrderRepositoryV4
+        participant TR as AbstractTemplate<Void>
+    end
+    
+    Note over CV3,RV3: V3에서는 각 클래스가<br>비즈니스 로직과 로그 추적 로직을<br>모두 책임짐
+    
+    Client->>CV3: request(itemId)
+    CV3->>CV3: trace.begin()
+    CV3->>SV3: orderItem(itemId)
+    SV3->>SV3: trace.begin()
+    SV3->>RV3: save(itemId)
+    RV3->>RV3: trace.begin()
+    RV3->>RV3: 비즈니스 로직 실행
+    RV3->>RV3: trace.end()
+    RV3-->>SV3: return
+    SV3->>SV3: trace.end()
+    SV3-->>CV3: return
+    CV3->>CV3: trace.end()
+    CV3-->>Client: return "ok"
+    
+    Note over CV4,TR: V4에서는 비즈니스 로직과<br>로그 추적 로직의 책임이<br>명확히 분리됨
+    
+    Client->>CV4: request(itemId)
+    CV4->>TC: new AbstractTemplate<>(trace)
+    CV4->>TC: execute("OrderControllerV4.request()")
+    TC->>TC: trace.begin()
+    TC->>CV4: call() - 비즈니스 로직 실행
+    CV4->>SV4: orderItem(itemId)
+    SV4->>TS: new AbstractTemplate<>(trace)
+    SV4->>TS: execute("OrderServiceV4.orderItem()")
+    TS->>TS: trace.begin()
+    TS->>SV4: call() - 비즈니스 로직 실행
+    SV4->>RV4: save(itemId)
+    RV4->>TR: new AbstractTemplate<>(trace)
+    RV4->>TR: execute("OrderRepositoryV4.save()")
+    TR->>TR: trace.begin()
+    TR->>RV4: call() - 비즈니스 로직 실행
+    RV4->>RV4: 비즈니스 로직 실행
+    RV4-->>TR: return
+    TR->>TR: trace.end()
+    TR-->>RV4: return
+    RV4-->>SV4: return
+    TS->>TS: trace.end()
+    TS-->>SV4: return
+    SV4-->>CV4: return
+    TC->>TC: trace.end()
+    TC-->>CV4: return "ok"
+    CV4-->>Client: return "ok"

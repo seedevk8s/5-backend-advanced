@@ -1,0 +1,29 @@
+classDiagram
+    class AbstractTemplate {
+        <<abstract>>
+        -LogTrace trace
+        +execute(message) T
+        #call() T
+    }
+    
+    class ConcreteTemplateA {
+        #call() T
+    }
+    
+    class ConcreteTemplateB {
+        #call() T
+    }
+    
+    class ConcreteTemplateC {
+        #call() T
+    }
+    
+    AbstractTemplate <|-- ConcreteTemplateA : extends
+    AbstractTemplate <|-- ConcreteTemplateB : extends
+    AbstractTemplate <|-- ConcreteTemplateC : extends
+    
+    note for AbstractTemplate "템플릿 메서드 패턴의 핵심:\n1. 알고리즘 골격 정의\n2. 일부 단계를 서브클래스로 위임\n3. 알고리즘 구조 변경 없이\n   특정 단계만 재정의 가능"
+    
+    note for ConcreteTemplateA "OrderControllerV4의\n익명 내부 클래스"
+    note for ConcreteTemplateB "OrderServiceV4의\n익명 내부 클래스"
+    note for ConcreteTemplateC "OrderRepositoryV4의\n익명 내부 클래스"

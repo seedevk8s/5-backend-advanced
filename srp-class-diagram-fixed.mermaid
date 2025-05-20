@@ -1,0 +1,38 @@
+classDiagram
+    class SRPViolation {
+        <<concept>>
+        한 클래스가 여러 책임을 가짐
+        변경의 이유가 여러 개
+    }
+    
+    class SRPCompliance {
+        <<concept>>
+        한 클래스는 한 가지 책임만 가짐
+        변경의 이유는 오직 하나
+    }
+    
+    class OrderControllerV3 {
+        -orderService OrderServiceV3
+        -trace LogTrace
+        +request(itemId) String
+        책임1: 주문 요청 처리
+        책임2: 로그 추적 처리
+    }
+    
+    class OrderControllerV4 {
+        -orderService OrderServiceV4
+        -trace LogTrace
+        +request(itemId) String
+        책임: 주문 요청 처리만 담당
+    }
+    
+    class AbstractTemplate {
+        -trace LogTrace
+        +execute(message) T
+        #call() T
+        책임: 로그 추적 처리만 담당
+    }
+    
+    SRPViolation --> OrderControllerV3
+    SRPCompliance --> OrderControllerV4
+    SRPCompliance --> AbstractTemplate

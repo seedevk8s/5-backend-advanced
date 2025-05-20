@@ -2,6 +2,7 @@ package com.choongang.advanced.app.v4;
 
 import com.choongang.advanced.trace.TraceStatus;
 import com.choongang.advanced.trace.logtrace.LogTrace;
+import com.choongang.advanced.trace.template.AbstractTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +15,16 @@ public class OrderServiceV4 {
 
     public void orderItem(String itemId) {
 
-        TraceStatus status = null;
-        try {
-            status = trace.begin("OrderServiceV4.orderItem()");
-            orderRepository.save(itemId);
-            trace.end(status);
-        } catch (Exception e) {
-           trace.exception(status, e);
-           throw e;  // 예외를 꼭 던져야 한다.
-        }
+        // 템플릿 메서드 패턴을 사용하여 비즈니스 로직을 실행합니다.
+        AbstractTemplate<Void> template = new AbstractTemplate<>(trace) {
+            @Override
+            protected Void call() {
+                orderRepository.save(itemId);
+                return null;
+            }
+        };
+        template.execute("OrderServiceV4.orderItem()");
+        // 기존의 코드와 동일한 기능을 수행합니다.
 
     }
 

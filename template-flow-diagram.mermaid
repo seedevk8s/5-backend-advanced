@@ -1,0 +1,28 @@
+flowchart TD
+    A[Client] --> B[OrderControllerV4]
+    
+    B --> C[AbstractTemplate<String>]
+    C --> D[LogTrace]
+    C --> E[call method]
+    E --> F[OrderServiceV4]
+    
+    F --> G[AbstractTemplate<Void>]
+    G --> D
+    G --> H[call method]
+    H --> I[OrderRepositoryV4]
+    
+    I --> J[AbstractTemplate<Void>]
+    J --> D
+    J --> K[call method]
+    
+    K --> L{itemId == ex?}
+    L -->|Yes| M[Exception]
+    L -->|No| N[Processing]
+    
+    M --> D
+    N --> D
+    
+    N --> I
+    I --> F
+    F --> B
+    B --> A

@@ -1,0 +1,46 @@
+flowchart TB
+    subgraph "GOF 템플릿 메서드 패턴 개념"
+        A["템플릿 메서드 패턴"] --> B["알고리즘의 구조를 메서드에 정의"]
+        A --> C["알고리즘의 일부 단계를 서브클래스에서 구현"]
+        A --> D["알고리즘의 구조는 그대로 유지하면서 특정 단계를 재정의"]
+        A --> E["변하는 것과 변하지 않는 것을 분리"]
+        A --> F["제어의 역전(IoC)을 통한 확장"]
+    end
+    
+    subgraph "V4 코드의 구현"
+        G["AbstractTemplate 클래스"] --> H["execute() 메서드 (템플릿 메서드)"]
+        G --> I["call() 메서드 (훅 메서드)"]
+        
+        H --> J["변하지 않는 부분\n(로그 추적 로직)"]
+        J --> J1["trace.begin()"]
+        J --> J2["try-catch 구조"]
+        J --> J3["trace.end()"]
+        J --> J4["trace.exception()"]
+        
+        I --> K["변하는 부분\n(비즈니스 로직)"]
+        K --> K1["OrderControllerV4의 구현"]
+        K --> K2["OrderServiceV4의 구현"]
+        K --> K3["OrderRepositoryV4의 구현"]
+    end
+    
+    subgraph "패턴의 이점"
+        L["코드 중복 제거"] 
+        M["변경의 유연성"]
+        N["관심사의 분리"]
+        O["확장 용이성"]
+    end
+    
+    B -.-> H
+    C -.-> I
+    D -.-> K
+    E -.-> G
+    
+    H --> L
+    I --> M
+    G --> N
+    K --> O
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style G fill:#bbf,stroke:#333,stroke-width:2px
+    style H fill:#dfd,stroke:#333,stroke-width:2px
+    style I fill:#dfd,stroke:#333,stroke-width:2px

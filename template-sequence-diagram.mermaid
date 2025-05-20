@@ -1,0 +1,58 @@
+sequenceDiagram
+    actor Client
+    participant Controller as OrderControllerV4
+    participant Template1 as AbstractTemplate<String>
+    participant Service as OrderServiceV4
+    participant Template2 as AbstractTemplate<Void>
+    participant Repository as OrderRepositoryV4
+    participant Template3 as AbstractTemplate<Void>
+    participant LogTrace
+    
+    Client->>Controller: GET /v4/request?itemId=xxx
+    
+    Controller->>Template1: new AbstractTemplate<>(trace)
+    Controller->>Template1: execute("OrderControllerV4.request()")
+    
+    Template1->>LogTrace: begin("OrderControllerV4.request()")
+    LogTrace-->>Template1: return status
+    
+    Template1->>Template1: call()
+    Template1->>Service: orderItem(itemId)
+    
+    Service->>Template2: new AbstractTemplate<>(trace)
+    Service->>Template2: execute("OrderServiceV4.orderItem()")
+    
+    Template2->>LogTrace: begin("OrderServiceV4.orderItem()")
+    LogTrace-->>Template2: return status
+    
+    Template2->>Template2: call()
+    Template2->>Repository: save(itemId)
+    
+    Repository->>Template3: new AbstractTemplate<>(trace)
+    Repository->>Template3: execute("OrderRepositoryV4.save()")
+    
+    Template3->>LogTrace: begin("OrderRepositoryV4.save()")
+    LogTrace-->>Template3: return status
+    
+    Template3->>Template3: call()
+    
+    alt itemId == "ex"
+        Template3-->>Template3: throw Exception
+        Template3->>LogTrace: exception(status, e)
+        Template3-->>Template2: throw Exception
+        Template2->>LogTrace: exception(status, e)
+        Template2-->>Template1: throw Exception
+        Template1->>LogTrace: exception(status, e)
+        Template1-->>Client: HTTP Error
+    else itemId != "ex"
+        Template3->>Repository: sleep(1000)
+        Template3->>LogTrace: end(status)
+        Template3-->>Repository: return null
+        Repository-->>Template2: return
+        Template2->>LogTrace: end(status)
+        Template2-->>Service: return null
+        Service-->>Template1: return
+        Template1->>LogTrace: end(status)
+        Template1-->>Controller: return "ok"
+        Controller-->>Client: return "ok"
+    end
