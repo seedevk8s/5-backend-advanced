@@ -23,7 +23,7 @@ public class OrderControllerV5 {
      *  * 주문 요청
      *  * @param itemId 상품 아이디
      *  * @return 주문 결과
-     *
+     *  템플릿 콜백 패턴의 동작(call())은 호출 코드(traceTemplate.execute())에 의해 트리거됩니다.
      */
     @GetMapping("/v5/request")
     public String request(String itemId) {
