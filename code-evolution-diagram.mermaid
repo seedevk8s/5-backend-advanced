@@ -1,0 +1,11 @@
+graph TD
+    A[v1: 직접 로그 추적기 구현] -->|중복 코드 발생| B[v2: 싱글톤으로 공통 로직 분리]
+    B -->|동시성 문제 발생| C[v3: ThreadLocal로 문제 해결]
+    C -->|코드 중복 여전히 존재| D[v4: 템플릿 메서드 패턴 적용]
+    D -->|상속 관계의 한계| E[v5: 템플릿 콜백 패턴 적용]
+    
+    style A fill:#f9d5e5,stroke:#333,stroke-width:2px
+    style B fill:#eeeeee,stroke:#333,stroke-width:2px
+    style C fill:#eeeeee,stroke:#333,stroke-width:2px
+    style D fill:#eeeeee,stroke:#333,stroke-width:2px
+    style E fill:#d5f9e5,stroke:#333,stroke-width:4px
