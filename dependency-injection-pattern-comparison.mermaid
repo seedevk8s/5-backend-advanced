@@ -1,0 +1,33 @@
+graph TD
+    %% 패턴1: 명시적 생성자 초기화
+    SC1[Spring Container] --> OC[OrderControllerV5]
+    SC1 --> OS[OrderServiceV5]
+    SC1 --> OR[OrderRepositoryV5]
+    
+    OC --> TC[TraceTemplate 1]
+    OS --> TS[TraceTemplate 2]
+    OR --> TR[TraceTemplate 3]
+    
+    %% 패턴2: 템플릿 빈 등록
+    SC2[Spring Container] --> OC2[OrderControllerV5Alt]
+    SC2 --> OS2[OrderServiceV5Alt]
+    SC2 --> OR2[OrderRepositoryV5Alt]
+    SC2 --> TT[TraceTemplate 빈]
+    
+    TT --> OC2
+    TT --> OS2
+    TT --> OR2
+    
+    %% 패턴3: 템플릿 팩토리
+    SC3[Spring Container] --> OC3[OrderControllerV5Factory]
+    SC3 --> OS3[OrderServiceV5Factory]
+    SC3 --> OR3[OrderRepositoryV5Factory]
+    SC3 --> TF[TemplateFactory 빈]
+    
+    TF --> TC3[TraceTemplate 1]
+    TF --> TS3[TraceTemplate 2]
+    TF --> TR3[TraceTemplate 3]
+    
+    TC3 --> OC3
+    TS3 --> OS3
+    TR3 --> OR3
