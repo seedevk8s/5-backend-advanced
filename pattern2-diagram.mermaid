@@ -1,0 +1,14 @@
+graph TD
+    SC[Spring Container] -->|TraceTemplate 주입| C[OrderControllerV5Alt]
+    SC -->|TraceTemplate 주입| S[OrderServiceV5Alt]
+    SC -->|TraceTemplate 주입| R[OrderRepositoryV5Alt]
+    
+    SC -->|생성| T[TraceTemplate 빈]
+    
+    T -->|단일 인스턴스 공유| C
+    T -->|단일 인스턴스 공유| S
+    T -->|단일 인스턴스 공유| R
+    
+    style SC fill:#f9d5e5
+    style C,S,R fill:#d5e5f9
+    style T fill:#d5f9e5
