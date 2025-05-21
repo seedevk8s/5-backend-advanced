@@ -1,0 +1,49 @@
+classDiagram
+    %% 템플릿 메서드 패턴 (V4)
+    class AbstractTemplate~T~ {
+        -LogTrace trace
+        +AbstractTemplate(LogTrace trace)
+        +T execute(String message)
+        #abstract T call()
+    }
+    
+    class AnonymousTemplate~Void~ {
+        #Void call()
+    }
+    
+    class OrderRepositoryV4 {
+        -LogTrace trace
+        +save(String itemId)
+    }
+    
+    %% 템플릿 콜백 패턴 (V5)
+    class TraceTemplate {
+        -LogTrace trace
+        +TraceTemplate(LogTrace trace)
+        +~T execute(String message, TraceCallback~T~ callback)
+    }
+    
+    class TraceCallback~T~ {
+        <<interface>>
+        +T call()
+    }
+    
+    class OrderRepositoryV5 {
+        -TraceTemplate traceTemplate
+        +OrderRepositoryV5(LogTrace trace)
+        +save(String itemId)
+    }
+    
+    class AnonymousCallback~Void~ {
+        +Void call()
+    }
+    
+    %% 관계 표현
+    AbstractTemplate <|-- AnonymousTemplate : 상속
+    OrderRepositoryV4 --> AnonymousTemplate : 생성
+    OrderRepositoryV4 --> AbstractTemplate : 사용
+    
+    TraceTemplate --> TraceCallback : 사용
+    OrderRepositoryV5 --> TraceTemplate : 사용
+    OrderRepositoryV5 --> AnonymousCallback : 생성
+    AnonymousCallback ..|> TraceCallback : 구현
