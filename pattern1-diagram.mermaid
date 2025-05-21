@@ -1,0 +1,12 @@
+graph TD
+    SC[Spring Container] -->|LogTrace 주입| C[OrderControllerV5]
+    SC -->|LogTrace 주입| S[OrderServiceV5]
+    SC -->|LogTrace 주입| R[OrderRepositoryV5]
+    
+    C -->|new TraceTemplate| TC[TraceTemplate]
+    S -->|new TraceTemplate| TS[TraceTemplate]
+    R -->|new TraceTemplate| TR[TraceTemplate]
+    
+    style SC fill:#f9d5e5
+    style C,S,R fill:#d5e5f9
+    style TC,TS,TR fill:#d5f9e5
