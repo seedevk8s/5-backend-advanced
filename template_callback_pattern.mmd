@@ -1,0 +1,23 @@
+%% 템플릿 콜백 패턴 구조
+classDiagram
+    class Template {
+        +execute()
+        +callback: Callback
+    }
+
+    class Callback {
+        <<interface>>
+        +call()
+    }
+
+    class BusinessLogic1 {
+        +call()
+    }
+
+    class BusinessLogic2 {
+        +call()
+    }
+
+    Template --> Callback : uses
+    BusinessLogic1 ..|> Callback
+    BusinessLogic2 ..|> Callback
