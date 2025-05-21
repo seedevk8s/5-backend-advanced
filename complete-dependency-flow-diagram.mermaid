@@ -1,0 +1,35 @@
+graph TD
+    SC[Spring Container]
+    LC[LogTraceConfig]
+    TL[ThreadLocalLogTrace]
+    LT[LogTrace]
+    
+    OC[OrderControllerV5]
+    OS[OrderServiceV5]
+    OR[OrderRepositoryV5]
+    
+    TC[TraceTemplate]
+    TS[TraceTemplate]
+    TR[TraceTemplate]
+    
+    SC -->|설정 로드| LC
+    LC -->|"@Bean"| TL
+    TL -->|구현| LT
+    
+    SC -->|LogTrace 주입| OC
+    SC -->|LogTrace 주입| OS
+    SC -->|LogTrace 주입| OR
+    
+    OC -->|new TraceTemplate| TC
+    OS -->|new TraceTemplate| TS
+    OR -->|new TraceTemplate| TR
+    
+    TC -->|의존| LT
+    TS -->|의존| LT
+    TR -->|의존| LT
+    
+    SC -->|OrderServiceV5 주입| OC
+    SC -->|OrderRepositoryV5 주입| OS
+    
+    OC -->|호출| OS
+    OS -->|호출| OR
