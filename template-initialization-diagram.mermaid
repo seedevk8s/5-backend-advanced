@@ -1,0 +1,43 @@
+classDiagram
+    class TraceTemplate {
+        -LogTrace trace
+        +TraceTemplate(LogTrace trace)
+        +~T execute(String message, TraceCallback~T~ callback)
+    }
+    
+    class LogTrace {
+        <<interface>>
+        +TraceStatus begin(String message)
+        +void end(TraceStatus status)
+        +void exception(TraceStatus status, Exception e)
+    }
+    
+    class OrderControllerV5 {
+        -OrderServiceV5 orderService
+        -TraceTemplate template
+        +OrderControllerV5(OrderServiceV5 orderService, LogTrace trace)
+    }
+    
+    class OrderServiceV5 {
+        -OrderRepositoryV5 orderRepository
+        -TraceTemplate template
+        +OrderServiceV5(OrderRepositoryV5 orderRepository, LogTrace trace)
+    }
+    
+    class OrderRepositoryV5 {
+        -TraceTemplate template
+        +OrderRepositoryV5(LogTrace trace)
+    }
+    
+    OrderControllerV5 --> TraceTemplate : 생성 및 초기화
+    OrderServiceV5 --> TraceTemplate : 생성 및 초기화
+    OrderRepositoryV5 --> TraceTemplate : 생성 및 초기화
+    
+    OrderControllerV5 --> OrderServiceV5 : 주입
+    OrderServiceV5 --> OrderRepositoryV5 : 주입
+    
+    TraceTemplate --> LogTrace : 의존
+    
+    note for OrderControllerV5 "template = new TraceTemplate(trace)"
+    note for OrderServiceV5 "template = new TraceTemplate(trace)"
+    note for OrderRepositoryV5 "template = new TraceTemplate(trace)"
