@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant Client
+    participant OrderController
+    participant TraceTemplate
+    participant OrderService
+    participant OrderRepository
+    
+    Client->>OrderController: request(itemId)
+    OrderController->>TraceTemplate: execute(message, callback)
+    Note over TraceTemplate: 실행 전 공통 로직 수행<br>(로그 시작, traceId 생성)
+    TraceTemplate->>OrderController: callback.call() 실행
+    OrderController->>OrderService: orderItem(itemId)
+    
+    OrderService->>TraceTemplate: execute(message, callback) 
+    Note over TraceTemplate: 실행 전 공통 로직 수행<br>(로그 시작, traceId 변경)
+    TraceTemplate->>OrderService: callback.call() 실행
+    OrderService->>OrderRepository: save(itemId)
+    
+    OrderRepository->>TraceTemplate: execute(message, callback)
+    Note over TraceTemplate: 실행 전 공통 로직 수행<br>(로그 시작, traceId 변경)
+    TraceTemplate->>OrderRepository: callback.call() 실행
+    Note over OrderRepository: 비즈니스 로직 실행
+    OrderRepository-->>TraceTemplate: 결과 반환
+    Note over TraceTemplate: 실행 후 공통 로직 수행<br>(로그 종료, traceId 복원)
+    TraceTemplate-->>OrderService: 결과 반환
+    
+    OrderService-->>TraceTemplate: 결과 반환
+    Note over TraceTemplate: 실행 후 공통 로직 수행<br>(로그 종료, traceId 복원)
+    TraceTemplate-->>OrderController: 결과 반환
+    
+    OrderController-->>TraceTemplate: 결과 반환
+    Note over TraceTemplate: 실행 후 공통 로직 수행<br>(로그 종료, traceId 복원)
+    TraceTemplate-->>Client: 최종 결과 반환
