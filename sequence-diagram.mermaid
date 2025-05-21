@@ -1,39 +1,12 @@
 sequenceDiagram
-    actor Client
-    participant Controller as OrderControllerV3
-    participant Service as OrderServiceV3
-    participant Repository as OrderRepositoryV3
-    participant LogTrace as FieldLogTrace
+    participant Client as 클라이언트
+    participant Template as TimeLogTemplate
+    participant Callback as Callback(익명/람다)
     
-    Client->>Controller: GET /v3/request?itemId=xxx
-    
-    Controller->>LogTrace: begin("OrderControllerV3.request()")
-    LogTrace-->>Controller: return TraceStatus
-    
-    Controller->>Service: orderItem(itemId)
-    
-    Service->>LogTrace: begin("OrderServiceV3.orderItem()")
-    LogTrace-->>Service: return TraceStatus
-    
-    Service->>Repository: save(itemId)
-    
-    Repository->>LogTrace: begin("OrderRepositoryV3.save()")
-    LogTrace-->>Repository: return TraceStatus
-    
-    alt itemId == "ex"
-        Repository-->>Repository: throw Exception
-        Repository->>LogTrace: exception(status, e)
-        Repository-->>Service: throw Exception
-        Service->>LogTrace: exception(status, e)
-        Service-->>Controller: throw Exception
-        Controller->>LogTrace: exception(status, e)
-        Controller-->>Client: HTTP Error
-    else itemId != "ex"
-        Repository->>Repository: sleep(1000)
-        Repository->>LogTrace: end(status)
-        Repository-->>Service: return
-        Service->>LogTrace: end(status)
-        Service-->>Controller: return
-        Controller->>LogTrace: end(status)
-        Controller-->>Client: return "ok"
-    end
+    Client->>+Template: execute(callback) 호출
+    Note over Template: 시작 시간 기록
+    Template->>+Callback: call() 호출
+    Note over Callback: 비즈니스 로직 실행
+    Callback-->>-Template: 반환
+    Note over Template: 종료 시간 기록<br>실행 시간 계산 및 로깅
+    Template-->>-Client: 반환
