@@ -1,0 +1,38 @@
+classDiagram
+    class TimeLogTemplate {
+        +execute(Callback callback) void
+    }
+    
+    class Callback {
+        <<interface>>
+        +call() void
+    }
+    
+    class AnonymousCallback1 {
+        +call() void
+    }
+    
+    class AnonymousCallback2 {
+        +call() void
+    }
+    
+    class LambdaCallback1 {
+        +call() void
+    }
+    
+    class LambdaCallback2 {
+        +call() void
+    }
+    
+    TimeLogTemplate --> Callback : 사용
+    Callback <|.. AnonymousCallback1 : 구현
+    Callback <|.. AnonymousCallback2 : 구현
+    Callback <|.. LambdaCallback1 : 구현(람다)
+    Callback <|.. LambdaCallback2 : 구현(람다)
+    
+    note for TimeLogTemplate "실행 시간을 측정하는 템플릿 클래스"
+    note for Callback "콜백 인터페이스"
+    note for AnonymousCallback1 "익명 내부 클래스로 구현된 비즈니스 로직1"
+    note for AnonymousCallback2 "익명 내부 클래스로 구현된 비즈니스 로직2"
+    note for LambdaCallback1 "람다식으로 구현된 비즈니스 로직1"
+    note for LambdaCallback2 "람다식으로 구현된 비즈니스 로직2"
