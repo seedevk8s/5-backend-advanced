@@ -1,0 +1,46 @@
+classDiagram
+    class TraceTemplate {
+        -LogTrace trace
+        +TraceTemplate(LogTrace trace)
+        +~T execute(String message, TraceCallback~T~ callback)
+    }
+    
+    class TraceCallback~T~ {
+        <<interface>>
+        +T call()
+    }
+    
+    class LogTrace {
+        <<interface>>
+        +TraceStatus begin(String message)
+        +void end(TraceStatus status)
+        +void exception(TraceStatus status, Exception e)
+    }
+    
+    class OrderControllerV5 {
+        -OrderServiceV5 orderService
+        -TraceTemplate template
+        +OrderControllerV5(OrderServiceV5 orderService, LogTrace trace)
+        +String request(String itemId)
+    }
+    
+    class OrderServiceV5 {
+        -OrderRepositoryV5 orderRepository
+        -TraceTemplate template
+        +OrderServiceV5(OrderRepositoryV5 orderRepository, LogTrace trace)
+        +void orderItem(String itemId)
+    }
+    
+    class OrderRepositoryV5 {
+        -TraceTemplate template
+        +OrderRepositoryV5(LogTrace trace)
+        +void save(String itemId)
+    }
+    
+    TraceTemplate --> TraceCallback : 사용
+    TraceTemplate --> LogTrace : 사용
+    OrderControllerV5 --> TraceTemplate : 사용
+    OrderServiceV5 --> TraceTemplate : 사용
+    OrderRepositoryV5 --> TraceTemplate : 사용
+    OrderControllerV5 --> OrderServiceV5 : 호출
+    OrderServiceV5 --> OrderRepositoryV5 : 호출
